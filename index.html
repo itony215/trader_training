@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <title>Document</title>
+    <title>Tony Stock</title>
 </head>
 <body>
   <div class="wrap">
@@ -118,8 +118,8 @@ function initEvents() {
     var minutes = "0" + date.getMinutes();
   guiSell.addEventListener('click', function() {
   
-    console.log(currentIterator)
-    console.log(globalData[0].data[currentIterator][1])
+    // console.log(currentIterator)
+    // console.log(globalData[0].data[currentIterator][1])
     let tmp = 0
     let sub_profit =0
     if(order.innerHTML ==0){
@@ -140,8 +140,8 @@ function initEvents() {
   })
   guiBuy.addEventListener('click', function() {
     
-    console.log(currentIterator)
-    console.log(globalData[0].data[currentIterator][1])
+    // console.log(currentIterator)
+    // console.log(globalData[0].data[currentIterator][1])
     let tmp = 0
     let sub_profit =0
     if(order.innerHTML ==0){
@@ -164,7 +164,7 @@ function initEvents() {
 
 function redrawChart(index) {
   // Set new subtitle on every redraw
-  console.log(globalData[0])
+  // console.log(globalData[0])
   chart.setTitle(null, {
     text: globalData[0].data[index][1]
   }, false);
@@ -221,8 +221,7 @@ function parseData(data) {
     globalData[0].data.unshift([data.timestamp[0]*1000,data.openPrice[0]])
     globalData[1].data.unshift([data.timestamp[0]*1000,data.avgPrice[0]])
     globalData[2].data.unshift([data.timestamp[0]*1000,data.volumn[0]])
-    console.log()
-    console.log()
+
   // Sort and limit dataset:
   maxIterator = Math.max.apply(null, globalData.map(series => series.data.length - 1));
 //   console.log(maxIterator)
