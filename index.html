@@ -54,6 +54,7 @@ let profit = document.getElementById('profit');
 let history = document.getElementById('history');
 let guiButtonState = 'Start';
 let intervalId;
+let pre_price,top_price,bottom,cdp,al,nl,ah,nh;
 fetch('https://raw.githubusercontent.com/itony215/flat_viewer_data/main/json/data_3661.json')
   .then(response => response.json())
   .then(data => {
@@ -85,7 +86,7 @@ fetch('https://raw.githubusercontent.com/itony215/test_data/main/20220818_3661.j
   });
 // get_yesterday_price(t1)
   
-
+//TODO: 加前幾天的K棒圖、最多兩口
 
 function initEvents() {
   guiButton.addEventListener('click', function() {
@@ -113,11 +114,11 @@ function initEvents() {
       }, duration);
     }
   });
-  var date = new Date(globalData[0].data[currentIterator][0]);
-    var hours = date.getHours();
-    var minutes = "0" + date.getMinutes();
-  guiSell.addEventListener('click', function() {
   
+  guiSell.addEventListener('click', function() {
+    let date = new Date(globalData[0].data[currentIterator][0]);
+    let hours = date.getHours();
+    let minutes = "0" + date.getMinutes();
     // console.log(currentIterator)
     // console.log(globalData[0].data[currentIterator][1])
     let tmp = 0
@@ -139,7 +140,9 @@ function initEvents() {
     
   })
   guiBuy.addEventListener('click', function() {
-    
+    let date = new Date(globalData[0].data[currentIterator][0]);
+    let hours = date.getHours();
+    let minutes = "0" + date.getMinutes();
     // console.log(currentIterator)
     // console.log(globalData[0].data[currentIterator][1])
     let tmp = 0
@@ -165,9 +168,25 @@ function initEvents() {
 function redrawChart(index) {
   // Set new subtitle on every redraw
   // console.log(globalData[0])
-  chart.setTitle(null, {
-    text: globalData[0].data[index][1]
+  let percent = ((globalData[0].data[index][1]-pre_price)/pre_price*100).toFixed(2);
+  if(percent>=0){
+    chart.setTitle(null, {
+    text: globalData[0].data[index][1]+' ('+percent+'%)',
+    style: {
+                color: 'red',
+                fontWeight: 'bold'
+            }
   }, false);
+  }else{
+    chart.setTitle(null, {
+    text: globalData[0].data[index][1]+' ('+percent+'%)',
+    style: {
+                color: 'green',
+                fontWeight: 'bold'
+            }
+  }, false);
+  }
+  
 
 
   const newValues = globalData.map(series => series.data[index][1]);
@@ -231,14 +250,13 @@ function parseData(data) {
 function createChart() {
   let t0 = globalData[0].data[globalData[0].data.length-1][0] - 86400000*2
   let t1 = globalData[0].data[globalData[0].data.length-1][0] - 86400000
-  let pre_price,top,bottom,cdp,al,nl,ah,nh
   // console.log(lastPrice)
     lastPrice.map(item=>{
       // console.log(item)
       if(item[0]>t0 && item[0]<t1){
         // console.log(item)
         pre_price = item[4]
-        top = item[4]*1.1
+        top_price = item[4]*1.1
         bottom = item[4]*0.9
         cdp = (item[2]+item[3]+2*item[4])/4
         ah = item[2]-item[3]+cdp
@@ -262,18 +280,18 @@ function createChart() {
     title: {
       floating: true,
       align: 'left',
-      x: 93,
-      y: 30,
+      x: 80,
+      y: 10,
       text: '3661 世芯KY'
     },
     subtitle: {
       floating: true,
       align: 'left',
-      y: 10,
+      y: 50,
       x: 80,
       text: Highcharts.dateFormat('%Y-%m-%d', globalData[0].data[globalData[0].data.length - 1][0]),
       style: {
-        fontSize: '20px'
+        fontSize: '40px',
       }
     },
     tooltip: {
@@ -287,7 +305,7 @@ function createChart() {
     yAxis: [{
       top: '10%',
       height: '90%',
-      min: bottom, max: top,
+      min: bottom, max: top_price,
       title: {
         text: ''
       },
@@ -295,52 +313,84 @@ function createChart() {
                     {
                     color:'red',
                     dashStyle:'solid',
-                    value:top,
-                    width:2
+                    value:top_price,
+                    width:2,
+                    label: {
+                        text: top_price,
+                        align: 'left',
+                    }
                   },
                   {
                     color:'green',
                     dashStyle:'solid',
                     value:bottom,
-                    width:2
+                    width:2,
+                    label: {
+                        text: bottom,
+                        align: 'left',
+                    }
                   },
                   {
                     color:'black',
                     dashStyle:'solid',
                     value:pre_price,
-                    width:2
+                    width:2,
+                    label: {
+                        text: pre_price,
+                        align: 'left',
+                    }
                   },
                   {
                     color:'black',
                     dashStyle:'dot',
                     value:cdp,
-                    width:2
+                    width:2,
+                    label: {
+                        text: cdp,
+                        align: 'right',
+                    }
                   },
                   {
                     color:'red',
                     dashStyle:'dot',
                     value:ah,
-                    width:2
+                    width:2,
+                    label: {
+                        text: ah,
+                        align: 'right',
+                    }
                   },
                   {
                     color:'red',
                     dashStyle:'dot',
                     value:nh,
-                    width:2
+                    width:2,
+                    label: {
+                        text: nh,
+                        align: 'right',
+                    }
                   }
                   ,
                   {
                     color:'green',
                     dashStyle:'dot',
                     value:nl,
-                    width:2
+                    width:2,
+                    label: {
+                        text: nl,
+                        align: 'right',
+                    }
                   }
                   ,
                   {
                     color:'green',
                     dashStyle:'dot',
                     value:al,
-                    width:2
+                    width:2,
+                    label: {
+                        text: al,
+                        align: 'right',
+                    }
                   }],
       maxPadding: 0.2,
       softMax: 1
@@ -355,8 +405,8 @@ function createChart() {
 
     xAxis: {
       gridLineWidth: 2,
-      // min: globalData[0].data[0][0],
-      // max: globalData[0].data[globalData[0].data.length-1][0],
+      min: globalData[0].data[0][0],
+      max: globalData[0].data[globalData[0].data.length-1][0],
       minRange: 7 * 24 * 60000 ,
       type: 'datetime'
     },
@@ -366,10 +416,7 @@ function createChart() {
       series: {
         animation: {
           duration
-        },
-        marker: {
-          symbol: 'circle'
-        },
+        },       
         dataLabels: {
           formatter: function() {
             return this.y;
@@ -405,14 +452,15 @@ function createChart() {
     </script>
     <style>
         #container {
-  min-width: 300px;
-  max-width: 800px;
+  /* min-width: 300px; */
+  /* max-width: 800px; */
+  height: 80vh;
   margin: 0 auto;
 }
 
 #outer-container {
-  max-width: 800px;
-  min-width: 300px;
+  /* max-width: 800px; */
+  /* min-width: 300px; */
   margin: 0 auto;
 }
 
